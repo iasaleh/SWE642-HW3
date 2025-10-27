@@ -7,15 +7,20 @@ frontend:
     build:
       commands:
         - npm run build -- --configuration production
+        - echo "Checking build output..."
+        - ls -la dist/
+        - ls -la dist/homework3/ || echo "homework3 folder not found"
+        - find dist/ -name "index.html"
   artifacts:
-    baseDirectory: dist/homework3   # or dist/homework3/browser if outputMode: "both"
+    baseDirectory: dist/homework3/browser
     files:
       - '**/*'
   cache:
     paths:
-      - node_modules/**
+      - node_modules/**/*
 
-redirects:
-  - source: </^[^.]+$/>
-    target: /index.html
-    status: 200
+customHeaders:
+  - pattern: '**/*'
+    headers:
+      - key: 'Cache-Control'
+        value: 'no-cache'
