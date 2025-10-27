@@ -1,0 +1,112 @@
+<div class="surveys-container">
+  <h1>All Survey Responses</h1>
+
+  <!-- Status Messages -->
+  <div class="status-container">
+    <div *ngIf="loading" class="loading">
+      Loading surveys...
+    </div>
+    <div *ngIf="error" class="status-message" [class.success]="error.includes('Loaded')">
+      {{ error }}
+    </div>
+  </div>
+
+  <!-- Surveys list -->
+  <div class="surveys-list">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student Info</th>
+          <th>Contact Details</th>
+          <th>Address</th>
+          <th>Survey Details</th>
+          <th>Campus Feedback</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let survey of displayedSurveys; let i = index">
+          <td class="index-cell">{{ i + 1 }}</td>
+          
+          <!-- Student Info -->
+          <td class="info-cell">
+            <div class="name">{{ survey.firstName || 'N/A' }} {{ survey.lastName || '' }}</div>
+            <div class="date secondary-text">
+              Survey taken: {{ survey.surveyDate === '0000-00-00' ? 'Not specified' : (survey.surveyDate | date:'MMM d, y') }}
+              <br>
+              <small>Created: {{ survey.created_at | date:'MMM d, y h:mm a' }}</small>
+            </div>
+          </td>
+
+          <!-- Contact Details -->
+          <td class="contact-cell">
+            <div class="email">{{ survey.email || 'No email provided' }}</div>
+            <div class="phone secondary-text">{{ survey.phone || 'No phone provided' }}</div>
+          </td>
+
+          <!-- Address -->
+          <td class="address-cell">
+            <div class="street">{{ survey.street || 'No street address' }}</div>
+            <div>
+              {{ survey.city || 'City N/A' }}, 
+              {{ survey.state || 'State N/A' }} 
+              {{ survey.zip || 'ZIP N/A' }}
+            </div>
+          </td>
+
+          <!-- Survey Details -->
+          <td class="survey-details-cell">
+            <div class="interest" *ngIf="survey.interestSource">
+              <strong>Interest Source:</strong>
+              <span class="interest-tag">{{ survey.interestSource }}</span>
+            </div>
+            <div class="recommend" *ngIf="survey.recommend">
+              <strong>Recommendation:</strong>
+              <span [class]="'recommend-tag ' + survey.recommend.toLowerCase()">
+                {{ survey.recommend | titlecase }}
+              </span>
+            </div>
+            <div *ngIf="!survey.interestSource && !survey.recommend" class="no-details">
+              No survey details provided
+            </div>
+          </td>
+
+          <!-- Campus Feedback -->
+          <td class="feedback-cell">
+            <div class="likes-section" *ngIf="survey.likes">
+              <strong>Liked about campus:</strong>
+              <div class="likes-list">
+                <span *ngFor="let like of survey.likes.split(',')" class="like-tag">
+                  {{ like | titlecase }}
+                </span>
+              </div>
+            </div>
+            <div *ngIf="!survey.likes" class="no-likes">
+              No campus preferences specified
+            </div>
+            <div *ngIf="survey.comments?.trim()" class="comments">
+              <strong>Comments:</strong>
+              <p class="comment-text">{{ survey.comments }}</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Loading status and Load More button -->
+  <div class="loading-status">
+    <div *ngIf="loading" class="loading-spinner">
+      Loading surveys...
+    </div>
+    <div *ngIf="error" class="status-message" [class.success]="error.includes('successfully')">
+      {{ error }}
+    </div>
+    <button 
+      *ngIf="hasMore && !loading" 
+      (click)="loadMore()" 
+      class="load-more-button">
+      Load More Surveys
+    </button>
+  </div>
+</div>

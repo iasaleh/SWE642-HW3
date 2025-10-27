@@ -1,0 +1,212 @@
+<div class="surveys-container">
+  <h1>Update Survey Responses</h1>
+
+  <!-- Status Messages -->
+  <div class="status-container">
+    <div *ngIf="loading" class="loading">
+      Loading surveys...
+    </div>
+    <div *ngIf="error" class="status-message" [class.success]="error.includes('successfully') || error.includes('Loaded')">
+      {{ error }}
+    </div>
+  </div>
+
+  <!-- Surveys list -->
+  <div class="surveys-list">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Actions</th>
+          <th>Student Info</th>
+          <th>Contact Details</th>
+          <th>Address</th>
+          <th>Survey Details</th>
+          <th>Campus Feedback</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let survey of displayedSurveys; let i = index">
+          <td class="index-cell">{{ i + 1 }}</td>
+          
+          <!-- Actions Column -->
+          <td class="actions-cell">
+            <ng-container *ngIf="!isEditing(survey.id)">
+              <button (click)="startEdit(survey)" class="edit-button">
+                Edit
+              </button>
+            </ng-container>
+            <ng-container *ngIf="isEditing(survey.id)">
+              <button (click)="saveEdit()" class="save-button">
+                Save
+              </button>
+              <button (click)="cancelEdit()" class="cancel-button">
+                Cancel
+              </button>
+            </ng-container>
+          </td>
+          
+          <!-- Student Info -->
+          <td class="info-cell">
+            <ng-container *ngIf="!isEditing(survey.id)">
+              <div class="name">{{ survey.firstName || 'N/A' }} {{ survey.lastName || '' }}</div>
+              <div class="date secondary-text">
+                Survey taken: {{ survey.surveyDate === '0000-00-00' ? 'Not specified' : (survey.surveyDate | date:'MMM d, y') }}
+                <br>
+                <small>Created: {{ survey.created_at | date:'MMM d, y h:mm a' }}</small>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="isEditing(survey.id)">
+              <div class="form-group">
+                <label>First Name:</label>
+                <input type="text" [(ngModel)]="editedSurvey.firstName" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Last Name:</label>
+                <input type="text" [(ngModel)]="editedSurvey.lastName" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Survey Date:</label>
+                <input type="date" [(ngModel)]="editedSurvey.surveyDate" class="form-input">
+              </div>
+            </ng-container>
+          </td>
+
+          <!-- Contact Details -->
+          <td class="contact-cell">
+            <ng-container *ngIf="!isEditing(survey.id)">
+              <div class="email">{{ survey.email || 'No email provided' }}</div>
+              <div class="phone secondary-text">{{ survey.phone || 'No phone provided' }}</div>
+            </ng-container>
+            <ng-container *ngIf="isEditing(survey.id)">
+              <div class="form-group">
+                <label>Email:</label>
+                <input type="email" [(ngModel)]="editedSurvey.email" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Phone:</label>
+                <input type="tel" [(ngModel)]="editedSurvey.phone" class="form-input">
+              </div>
+            </ng-container>
+          </td>
+
+          <!-- Address -->
+          <td class="address-cell">
+            <ng-container *ngIf="!isEditing(survey.id)">
+              <div class="street">{{ survey.street || 'No street address' }}</div>
+              <div>
+                {{ survey.city || 'City N/A' }}, 
+                {{ survey.state || 'State N/A' }} 
+                {{ survey.zip || 'ZIP N/A' }}
+              </div>
+            </ng-container>
+            <ng-container *ngIf="isEditing(survey.id)">
+              <div class="form-group">
+                <label>Street:</label>
+                <input type="text" [(ngModel)]="editedSurvey.street" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>City:</label>
+                <input type="text" [(ngModel)]="editedSurvey.city" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>State:</label>
+                <input type="text" [(ngModel)]="editedSurvey.state" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>ZIP:</label>
+                <input type="text" [(ngModel)]="editedSurvey.zip" class="form-input">
+              </div>
+            </ng-container>
+          </td>
+
+          <!-- Survey Details -->
+          <td class="survey-details-cell">
+            <ng-container *ngIf="!isEditing(survey.id)">
+              <div class="interest" *ngIf="survey.interestSource">
+                <strong>Interest Source:</strong>
+                <span class="interest-tag">{{ survey.interestSource }}</span>
+              </div>
+              <div class="recommend" *ngIf="survey.recommend">
+                <strong>Recommendation:</strong>
+                <span [class]="'recommend-tag ' + survey.recommend.toLowerCase()">
+                  {{ survey.recommend | titlecase }}
+                </span>
+              </div>
+              <div *ngIf="!survey.interestSource && !survey.recommend" class="no-details">
+                No survey details provided
+              </div>
+            </ng-container>
+            <ng-container *ngIf="isEditing(survey.id)">
+              <div class="form-group">
+                <label>Interest Source:</label>
+                <input type="text" [(ngModel)]="editedSurvey.interestSource" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Recommendation:</label>
+                <select [(ngModel)]="editedSurvey.recommend" class="form-input">
+                  <option value="">Select...</option>
+                  <option value="Very Likely">Very Likely</option>
+                  <option value="Likely">Likely</option>
+                  <option value="Unlikely">Unlikely</option>
+                </select>
+              </div>
+            </ng-container>
+          </td>
+
+          <!-- Campus Feedback -->
+          <td class="feedback-cell">
+            <ng-container *ngIf="!isEditing(survey.id)">
+              <div class="likes-section" *ngIf="survey.likes">
+                <strong>Liked about campus:</strong>
+                <div class="likes-list">
+                  <span *ngFor="let like of survey.likes.split(',')" class="like-tag">
+                    {{ like | titlecase }}
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="!survey.likes" class="no-likes">
+                No campus preferences specified
+              </div>
+              <div *ngIf="survey.comments?.trim()" class="comments">
+                <strong>Comments:</strong>
+                <p class="comment-text">{{ survey.comments }}</p>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="isEditing(survey.id)">
+              <div class="form-group">
+                <label>Likes about campus:</label>
+                <div class="checkbox-group">
+                  <label *ngFor="let option of likeOptions" class="checkbox-label">
+                    <input type="checkbox" 
+                           [checked]="isLikeSelected(option)"
+                           (change)="toggleLike(option)"
+                           class="checkbox-input">
+                    {{ option }}
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Comments:</label>
+                <textarea [(ngModel)]="editedSurvey.comments" class="form-textarea" rows="3"></textarea>
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Loading status and Load More button -->
+  <div class="loading-status">
+    <div *ngIf="loading" class="loading-spinner">
+      Loading surveys...
+    </div>
+    <button 
+      *ngIf="hasMore && !loading" 
+      (click)="loadMore()" 
+      class="load-more-button">
+      Load More Surveys
+    </button>
+  </div>
+</div>

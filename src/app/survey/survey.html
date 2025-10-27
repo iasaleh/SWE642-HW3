@@ -1,0 +1,124 @@
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Survey Form</title>
+</head>
+<div>
+
+  <app-success-popup
+    [show]="showSuccessPopup"
+    [message]="statusMessage"
+    [status]="responseStatus"
+    (onClose)="onPopupClose()"
+  ></app-success-popup>
+
+  <form id="student-survey" (submit)="onSubmit($event)" novalidate>
+    <h1>Student Survey Form</h1>
+
+    <div *ngIf="!isSuccess && statusMessage" class="status error">
+      {{ statusMessage }}
+    </div>
+
+    <!-- Response Details -->
+    <div *ngIf="responseStatus !== null" class="response-details">
+      <div class="status-code">
+        <strong>Status Code:</strong> {{ responseStatus }}
+      </div>
+      <div class="response-body" *ngIf="responseBody">
+        <strong>Response Body:</strong>
+        <pre>{{ responseBody | json }}</pre>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div>
+        <label for="firstName">First Name *</label>
+        <input id="firstName" name="firstName" type="text" required />
+      </div>
+      <div>
+        <label for="lastName">Last Name *</label>
+        <input id="lastName" name="lastName" type="text" required />
+      </div>
+    </div>
+
+    <div>
+      <label for="street">Street Address *</label>
+      <input id="street" name="street" type="text" required />
+    </div>
+
+    <div class="grid grid-2">
+      <div>
+        <label for="city">City *</label>
+        <input id="city" name="city" type="text" required />
+      </div>
+      <div>
+        <label for="state">State *</label>
+        <input id="state" name="state" type="text" required />
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div>
+        <label for="zip">Zip Code *</label>
+        <input id="zip" name="zip" type="text" inputmode="numeric" pattern="\d{5}(-\d{4})?" placeholder="12345 or 12345-6789" required />
+      </div>
+      <div>
+        <label for="phone">Telephone Number *</label>
+        <input id="phone" name="phone" type="tel" placeholder="(555) 123-4567" required />
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div>
+        <label for="email">Email *</label>
+        <input id="email" name="email" type="email" required />
+      </div>
+      <div>
+        <label for="surveyDate">Date of Survey *</label>
+        <input id="surveyDate" name="surveyDate" type="date" required />
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>What did you like most about the campus? (check all that apply)</legend>
+      <div class="inline">
+        <label><input type="checkbox" name="likes" value="students" /> Students</label>
+        <label><input type="checkbox" name="likes" value="location" /> Location</label>
+        <label><input type="checkbox" name="likes" value="campus" /> Campus</label>
+        <label><input type="checkbox" name="likes" value="atmosphere" /> Atmosphere</label>
+        <label><input type="checkbox" name="likes" value="dorm-rooms" /> Dorm Rooms</label>
+        <label><input type="checkbox" name="likes" value="sports" /> Sports</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>How did you become interested in the university? *</legend>
+      <div class="inline" role="radiogroup" aria-labelledby="interestLegend">
+        <label><input type="radio" name="interestSource" value="friends" required /> Friends</label>
+        <label><input type="radio" name="interestSource" value="television" /> Television</label>
+        <label><input type="radio" name="interestSource" value="internet" /> Internet</label>
+        <label><input type="radio" name="interestSource" value="other" /> Other</label>
+      </div>
+    </fieldset>
+
+    <div>
+      <label for="recommend">How likely are you to recommend this school? *</label>
+      <select id="recommend" name="recommend" required>
+        <option value="" selected disabled>— Select one —</option>
+        <option value="very-likely">Very Likely</option>
+        <option value="likely">Likely</option>
+        <option value="unlikely">Unlikely</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="comments">Additional Comments</label>
+      <textarea id="comments" name="comments" rows="5" placeholder="Share any other thoughts..."></textarea>
+    </div>
+
+    <div class="actions">
+  <button type="submit" [disabled]="isSubmitting">Submit</button>
+      <button type="reset" [disabled]="isSubmitting">Cancel</button>
+    </div>
+  </form>
+
+</div>
