@@ -8,15 +8,14 @@ frontend:
       commands:
         - npm run build -- --configuration production
   artifacts:
-    baseDirectory: dist/homework3
+    baseDirectory: dist/homework3   # or dist/homework3/browser if outputMode: "both"
     files:
       - '**/*'
   cache:
     paths:
       - node_modules/**
 
-# Optional: Single Page App rewrite rule (you can also set this in Amplify Console)
-# redirects:
-#   - source: </^[^.]+$/>
-#     target: /index.html
-#     status: 200
+redirects:
+  - source: </^[^.]+$/>
+    target: /index.html
+    status: 200
